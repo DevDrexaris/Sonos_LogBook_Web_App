@@ -30,3 +30,27 @@ function env_value_any($keys, $fallback = '') {
 
     return $fallback;
 }
+
+function database_config() {
+    $url = env_value_any(['MYSQL_URL', 'DATABASE_URL'], '');
+    if ($url !== '') {
+        $parts = parse_url($url);
+        if (is_array($parts) && !empty($parts['host'])) {
+            return [
+                'host' => $parts['host'],
+                'port' => $parts['port'] ?? 3306,
+                'database' => isset($parts['path']) ? ltrim($parts['path'], '/') : 'logbook',
+                'username' => isset($parts['user']) ? urldecode($parts['user']) : 'root',
+                'password' => isset($parts['pass']) ? urldecode($parts['pass']) : '',
+            ];
+        }
+    }
+
+    return [
+        'host' => env_value_any(['MYSQLHOST', 'DB_HOST'], ''),
+        'port' => env_value_any(['MYSQLPORT', 'DB_PORT'], '3306'),
+        'database' => env_value_any(['MYSQLDATABASE', 'DB_DATABASE'], 'logbook'),
+        'username' => env_value_any(['MYSQLUSER', 'DB_USERNAME'], 'root'),
+        'password' => env_value_any(['MYSQLPASSWORD', 'DB_PASSWORD'], ''),
+    ];
+}

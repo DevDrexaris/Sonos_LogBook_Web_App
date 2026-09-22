@@ -4,17 +4,22 @@ $origin = env_value('APP_ORIGIN', 'http://localhost:5173');
 header('Access-Control-Allow-Origin: ' . $origin); header('Access-Control-Allow-Credentials: true'); header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token'); header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS'); header('Content-Type: application/json; charset=utf-8');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
 session_name(env_value('SESSION_NAME', 'logbook_session')); session_start();
-$dbHost = env_value_any(['MYSQLHOST', 'DB_HOST'], '127.0.0.1');
-$dbPort = env_value_any(['MYSQLPORT', 'DB_PORT'], '3306');
-$dbName = env_value_any(['MYSQLDATABASE', 'DB_DATABASE'], 'logbook');
-$dbUser = env_value_any(['MYSQLUSER', 'DB_USERNAME'], 'root');
-$dbPassword = env_value_any(['MYSQLPASSWORD', 'DB_PASSWORD'], '');
+$database = database_config();
+$dbHost = $database['host'];
+$dbPort = $database['port'];
+$dbName = $database['database'];
+$dbUser = $database['username'];
+$dbPassword = $database['password'];
+if ($dbHost === '') {
+    http_response_code(503);
+    respond(false, 'Database configuration is missing. Add Railway MySQL variables to this backend service.', [], 503);
+}
 try {
 	$pdo = new PDO('mysql:host='.$dbHost.';port='.$dbPort.';dbname='.$dbName.';charset=utf8mb4', $dbUser, $dbPassword, [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);
 } catch (Throwable $e) {
-	error_log('Database connection failed: ' . $e->getMessage());
+	error_log('Database connection failed for host='.$dbHost.' port='.$dbPort.' database='.$dbName.' user='.$dbUser.': ' . $e->getMessage());
 	http_response_code(503);
-	respond(false, 'Database connection is unavailable.');
+	respond(false, 'Database connection is unavailable. Check the Railway backend logs for the PDO error.', [], 503);
 }
 function body() { return json_decode(file_get_contents('php://input'), true) ?: []; }
 function respond($success, $message = '', $data = [], $status = 200) { http_response_code($status); echo json_encode(['success'=>$success, 'message'=>$message] + ($data ? ['data'=>$data] : [])); exit; }
