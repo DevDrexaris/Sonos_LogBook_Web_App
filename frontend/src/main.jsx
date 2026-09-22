@@ -37,13 +37,18 @@ const API =
   import.meta.env.VITE_API_URL ||
   "https://sonoslogbookwebapp-production.up.railway.app/api";
 const emptyLogs = [];
-const defaultProfileImage = "/api/uploads/profiles/SonoDefaultbald.jpg";
+const defaultProfileImage = "https://cdn.phototourl.com/free/2026-09-22-5a80ed76-cc8f-4016-abd2-1326314af37b.jpg";
 const defaultTheme = {
   accent: "#d7f56a",
   background: "linear-gradient(135deg, #0d1117 0%, #17242a 100%)",
 };
 const themeKey = (userId) => `sono_theme_${userId}`;
-const imageUrl = (path) => path ? `${API.replace('/api', '')}${path}` : '';
+const imageUrl = (path) => {
+  if (!path) return "";
+  if (path.includes("SonoDefaultbald.jpg")) return defaultProfileImage;
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API.replace('/api', '')}${path}`;
+};
 const formatTime = (time) => { if (!time) return '--'; const [hours, minutes] = time.slice(0, 5).split(':'); const hour = Number(hours) % 12 || 12; return `${hour}:${minutes} ${Number(hours) >= 12 ? 'PM' : 'AM'}`; };
 function getTheme(userId) {
   if (!userId) return defaultTheme;
@@ -1082,6 +1087,7 @@ function Profile({ user, onLogin }) {
     email: user.email || "",
   });
   const [image, setImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -1105,7 +1111,13 @@ function Profile({ user, onLogin }) {
     }
   };
   const chooseImage = (event) => { const file = event.target.files?.[0]; if (!file) return; if (!file.type.startsWith("image/")) return setMessage("Choose a PNG, JPG, or WebP image."); if (file.size > 8 * 1024 * 1024) return setMessage("Choose an image smaller than 8 MB."); setImageSrc(URL.createObjectURL(file)); setCrop({ x: 0, y: 0 }); setZoom(1); };
-  const confirmCrop = async () => { const blob = await getCroppedImage(imageSrc, croppedAreaPixels); setImage(new File([blob], "sono-profile.jpg", { type: "image/jpeg" })); setImageSrc(null); };
+  const confirmCrop = async () => {
+    const blob = await getCroppedImage(imageSrc, croppedAreaPixels);
+    const file = new File([blob], "sono-profile.jpg", { type: "image/jpeg" });
+    setImage(file);
+    setPreviewImage(URL.createObjectURL(file));
+    setImageSrc(null);
+  };
   return (
     <Shell
       user={user}
@@ -1126,7 +1138,7 @@ function Profile({ user, onLogin }) {
         </div>
         <section className="panel profile-panel">
           <div className="profile-photo">
-              <img src={imageUrl(user.profile_image || defaultProfileImage)} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = imageUrl(defaultProfileImage); }} />
+              <img src={previewImage || imageUrl(user.profile_image || defaultProfileImage)} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = imageUrl(defaultProfileImage); }} />
           </div>
           {message && <div className="alert">{message}</div>}
           <form onSubmit={save}>

@@ -76,7 +76,7 @@ if (!$existing) {
     }
 
     $insert = $pdo->prepare('INSERT INTO users (full_name, username, email, password, profile_image, role) VALUES (?, ?, ?, ?, ?, ?)');
-    $insert->execute([$fullName, $username, $email, $passwordHash, '/api/uploads/profiles/SonoDefaultbald.jpg', 'user']);
+    $insert->execute([$fullName, $username, $email, $passwordHash, 'https://cdn.phototourl.com/free/2026-09-22-5a80ed76-cc8f-4016-abd2-1326314af37b.jpg', 'user']);
     $id = $pdo->lastInsertId();
 
     $fetch = $pdo->prepare('SELECT * FROM users WHERE id = ? LIMIT 1');

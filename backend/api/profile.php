@@ -9,7 +9,9 @@ if (!$fullName || !preg_match('/^[a-zA-Z0-9_]{3,50}$/', $username)) respond(fals
 $check = $pdo->prepare('SELECT id FROM users WHERE username=? AND id<>?');
 $check->execute([$username, $user['id']]);
 if ($check->fetch()) respond(false, 'That email or username is already in use.', [], 409);
-$imagePath = $user['profile_image'] ?: '/api/uploads/profiles/SonoDefaultbald.jpg';
+$defaultImage = 'https://cdn.phototourl.com/free/2026-09-22-5a80ed76-cc8f-4016-abd2-1326314af37b.jpg';
+$imagePath = $user['profile_image'] ?: $defaultImage;
+if (str_contains($imagePath, 'SonoDefaultbald.jpg')) $imagePath = $defaultImage;
 if (!empty($_FILES['profile_image']['tmp_name'])) {
     $file = $_FILES['profile_image'];
     if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > 2 * 1024 * 1024) respond(false, 'Profile images must be smaller than 2 MB.', [], 422);
