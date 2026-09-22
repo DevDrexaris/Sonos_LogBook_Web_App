@@ -34,7 +34,8 @@ import SonoLogo from "./assets/SonoLogoF.png";
 import Cropper from "react-easy-crop";
 
 const API =
-  import.meta.env.VITE_API_URL || "http://localhost/logbook/backend/api";
+  import.meta.env.VITE_API_URL ||
+  "https://sonoslogbookwebapp-production.up.railway.app/api";
 const emptyLogs = [];
 const defaultProfileImage = "/api/uploads/profiles/SonoDefaultbald.jpg";
 const defaultTheme = {
