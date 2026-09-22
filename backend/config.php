@@ -12,3 +12,21 @@ function env_value($key, $fallback = '') {
     }
     return ($value !== false && $value !== null && $value !== '') ? $value : $fallback;
 }
+
+function env_value_any($keys, $fallback = '') {
+    foreach ($keys as $key) {
+        $value = getenv($key);
+        if ($value !== false && $value !== null && $value !== '') {
+            return $value;
+        }
+    }
+
+    global $env;
+    foreach ($keys as $key) {
+        if (isset($env[$key]) && $env[$key] !== '') {
+            return $env[$key];
+        }
+    }
+
+    return $fallback;
+}
