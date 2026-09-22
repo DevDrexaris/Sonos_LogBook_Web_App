@@ -107,6 +107,11 @@ function AuthPage({ onLogin }) {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    request("/auth/me.php")
+      .then((data) => onLogin(data.data.user))
+      .catch(() => {});
+  }, []);
   const submit = async (e) => {
     e.preventDefault();
     setError("");

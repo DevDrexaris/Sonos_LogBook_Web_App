@@ -87,4 +87,6 @@ if (!$existing) {
 unset($existing['password']);
 $_SESSION['user'] = $existing;
 
-respond(true, 'Google login successful.', ['user' => $existing]);
+$frontendOrigin = rtrim(env_value('APP_ORIGIN', 'https://sono-logbook.vercel.app'), '/');
+header('Location: ' . $frontendOrigin . '/login?google=success');
+exit;
