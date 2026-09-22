@@ -1,0 +1,92 @@
+.auth-box > .eyebrow,
+.auth-box > h2,
+.auth-box > .muted,
+.auth-box > .alert,
+.auth-box > form,
+.auth-box > .divider,
+.auth-box > .google-button,
+.auth-box > .auth-switch,
+.auth-box > .demo-note {
+  width: 100%;
+}
+
+.auth-box > h2,
+.auth-box > .muted,
+.auth-box > .alert,
+.auth-box > form {
+  text-align: left;
+}
+
+.auth-box > h2 {
+  line-height: 1.15;
+}
+
+.auth-box > .muted {
+  margin: 0;
+}
+
+.auth-box > form {
+  margin-top: 24px;
+}
+
+.auth-box > .divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 14px;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.auth-box > .divider::before,
+.auth-box > .divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--line);
+}
+
+.auth-box > .google-button {
+  min-height: 46px;
+  margin-top: 0;
+}
+
+.google-mark {
+  color: #4285f4;
+  font: 700 18px 'Space Grotesk';
+}
+
+.auth-box > .auth-switch,
+.auth-box > .demo-note {
+  text-align: center;
+}
+
+.auth-box > .auth-switch {
+  margin-top: 22px;
+}
+
+.auth-box > .demo-note {
+  margin-top: 14px;
+}
+
+@media (max-width: 780px) {
+  .auth-shell {
+    display: block;
+  }
+
+  .auth-art {
+    display: none;
+  }
+
+  .auth-panel {
+    min-height: 100vh;
+    padding: 28px 20px;
+  }
+
+  .mobile-brand {
+    display: flex;
+    margin-bottom: 34px;
+  }
+}

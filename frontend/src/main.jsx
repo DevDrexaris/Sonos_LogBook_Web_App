@@ -29,6 +29,7 @@ import {
   Send,
 } from "lucide-react";
 import "./style.css";
+import "./auth-fixes.css";
 import SonoLogo from "./assets/SonoLogoF.png";
 import Cropper from "react-easy-crop";
 
