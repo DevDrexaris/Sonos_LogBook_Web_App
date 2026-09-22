@@ -227,6 +227,19 @@ function AuthPage({ onLogin }) {
               <ArrowUpRight size={17} />
             </button>
           </form>
+
+          <div className="divider"><span>or continue with</span></div>
+          <button
+            type="button"
+            className="secondary wide google-button"
+            onClick={() => {
+              window.location.href = `${API}/auth/google.php`;
+            }}
+          >
+            <span className="google-mark">G</span>
+            {register ? "Continue with Google" : "Sign in with Google"}
+          </button>
+
           <div className="auth-switch">
             {register ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
