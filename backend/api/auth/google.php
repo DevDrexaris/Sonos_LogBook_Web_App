@@ -5,7 +5,13 @@ $redirectUri = env_value(
     'GOOGLE_REDIRECT_URI',
     'https://sonoslogbookwebapp-production.up.railway.app/api/auth/google.php'
 );
-$clientId = env_value('GOOGLE_CLIENT_ID');
+$clientId = env_value('GOOGLE_CLIENT_ID', '938960396366-8r9boja8p8pitc355qo2ejbe5koe8e25.apps.googleusercontent.com');
+$clientSecret = env_value('GOOGLE_CLIENT_SECRET');
+$frontendOrigin = rtrim(env_value('APP_ORIGIN', 'https://sono-logbook.vercel.app'), '/');
+
+if ($clientSecret === '') {
+    respond(false, 'Google login is not configured on the backend.', [], 503);
+}
 
 $code = $_GET['code'] ?? null;
 
@@ -25,7 +31,7 @@ if (!$code) {
 $tokenPayload = [
     'code' => $code,
     'client_id' => $clientId,
-    'client_secret' => env_value('GOOGLE_CLIENT_SECRET'),
+    'client_secret' => $clientSecret,
     'redirect_uri' => $redirectUri,
     'grant_type' => 'authorization_code',
 ];
@@ -53,6 +59,11 @@ if (empty($user['email'])) {
 }
 
 $email = strtolower(trim($user['email']));
+if (!str_ends_with($email, '@gmail.com')) {
+    session_destroy();
+    header('Location: ' . $frontendOrigin . '/login?google=error&message=' . rawurlencode('Only Gmail accounts can register or sign in.'));
+    exit;
+}
 $fullName = trim($user['name'] ?? $user['given_name'] ?? 'Google User');
 $username = preg_replace('/[^a-zA-Z0-9_]/', '', strtolower(str_replace(' ', '_', $fullName))) ?: 'googleuser';
 
@@ -87,6 +98,5 @@ if (!$existing) {
 unset($existing['password']);
 $_SESSION['user'] = $existing;
 
-$frontendOrigin = rtrim(env_value('APP_ORIGIN', 'https://sono-logbook.vercel.app'), '/');
 header('Location: ' . $frontendOrigin . '/login?google=success');
 exit;

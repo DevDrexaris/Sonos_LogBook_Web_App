@@ -84,6 +84,11 @@ async function request(path, options = {}) {
     throw new Error(data.message || "Unable to connect to the server.");
   return data;
 }
+async function logoutSession() {
+  await request("/auth/logout.php", { method: "POST" }).catch(() => {});
+  localStorage.removeItem("logbook_user");
+  window.location.reload();
+}
 function useAuth() {
   const [user, setUser] = useState(() =>
     JSON.parse(localStorage.getItem("logbook_user") || "null"),
@@ -113,6 +118,9 @@ function AuthPage({ onLogin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const googleError = params.get("message");
+    if (googleError) setError(googleError);
     request("/auth/me.php")
       .then((data) => onLogin(data.data.user))
       .catch(() => {});
@@ -207,6 +215,8 @@ function AuthPage({ onLogin }) {
               <input
                 required
                 type={register ? "email" : "text"}
+                pattern={register ? ".+@gmail\\.com$" : undefined}
+                title={register ? "Use a Gmail address ending in @gmail.com." : undefined}
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
@@ -697,10 +707,7 @@ function Dashboard({ user }) {
   return (
     <Shell
       user={user}
-      onLogout={() => {
-        localStorage.removeItem("logbook_user");
-        location.reload();
-      }}
+      onLogout={logoutSession}
     >
       <main className="content">
         <div className="page-heading">
@@ -925,10 +932,7 @@ function LogList({ user }) {
   return (
     <Shell
       user={user}
-      onLogout={() => {
-        localStorage.removeItem("logbook_user");
-        location.reload();
-      }}
+      onLogout={logoutSession}
     >
       <main className="content">
         <div className="page-heading">
@@ -1000,10 +1004,7 @@ function People({ user }) {
   return (
     <Shell
       user={user}
-      onLogout={() => {
-        localStorage.removeItem("logbook_user");
-        location.reload();
-      }}
+      onLogout={logoutSession}
     >
       <main className="content">
         <div className="page-heading">
@@ -1121,10 +1122,7 @@ function Profile({ user, onLogin }) {
   return (
     <Shell
       user={user}
-      onLogout={() => {
-        localStorage.removeItem("logbook_user");
-        location.reload();
-      }}
+      onLogout={logoutSession}
     >
       <main className="content narrow">
         <div className="page-heading">
@@ -1211,10 +1209,7 @@ function SettingsPage({ user }) {
   return (
     <Shell
       user={user}
-      onLogout={() => {
-        localStorage.removeItem("logbook_user");
-        location.reload();
-      }}
+      onLogout={logoutSession}
     >
       <main className="content narrow">
         <div className="page-heading">
