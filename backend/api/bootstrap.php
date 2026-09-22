@@ -3,7 +3,15 @@ require_once __DIR__ . '/../config.php';
 $origin = env_value('APP_ORIGIN', 'http://localhost:5173');
 header('Access-Control-Allow-Origin: ' . $origin); header('Access-Control-Allow-Credentials: true'); header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token'); header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS'); header('Content-Type: application/json; charset=utf-8');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
-session_name(env_value('SESSION_NAME', 'logbook_session')); session_start();
+session_name(env_value('SESSION_NAME', 'logbook_session'));
+session_set_cookie_params([
+	'lifetime' => 0,
+	'path' => '/',
+	'secure' => true,
+	'httponly' => true,
+	'samesite' => 'None',
+]);
+session_start();
 $database = database_config();
 $dbHost = $database['host'];
 $dbPort = $database['port'];
