@@ -6,6 +6,9 @@ if (file_exists(__DIR__ . '/.env')) {
 
 function env_value($key, $fallback = '') {
     global $env;
-    $value = $env[$key] ?? getenv($key);
+    $value = getenv($key);
+    if ($value === false || $value === null || $value === '') {
+        $value = $env[$key] ?? null;
+    }
     return ($value !== false && $value !== null && $value !== '') ? $value : $fallback;
 }
