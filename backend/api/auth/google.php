@@ -1,12 +1,18 @@
 <?php
 require_once __DIR__ . '/../bootstrap.php';
 
+$redirectUri = env_value(
+    'GOOGLE_REDIRECT_URI',
+    'https://sonoslogbookwebapp-production.up.railway.app/api/auth/google.php'
+);
+$clientId = env_value('GOOGLE_CLIENT_ID');
+
 $code = $_GET['code'] ?? null;
 
 if (!$code) {
     $params = http_build_query([
-        'client_id' => env_value('GOOGLE_CLIENT_ID'),
-        'redirect_uri' => env_value('GOOGLE_REDIRECT_URI'),
+        'client_id' => $clientId,
+        'redirect_uri' => $redirectUri,
         'response_type' => 'code',
         'scope' => 'openid email profile',
         'access_type' => 'online',
@@ -18,9 +24,9 @@ if (!$code) {
 
 $tokenPayload = [
     'code' => $code,
-    'client_id' => env_value('GOOGLE_CLIENT_ID'),
+    'client_id' => $clientId,
     'client_secret' => env_value('GOOGLE_CLIENT_SECRET'),
-    'redirect_uri' => env_value('GOOGLE_REDIRECT_URI'),
+    'redirect_uri' => $redirectUri,
     'grant_type' => 'authorization_code',
 ];
 
