@@ -56,7 +56,13 @@ $statusCode = (int)($statusMatch[1] ?? 0);
 if ($response === false || $statusCode < 200 || $statusCode >= 300) {
     $pdo->prepare('DELETE FROM password_resets WHERE user_id=?')->execute([$user['id']]);
     error_log('Password reset email failed provider=' . ($brevoKey !== '' ? 'brevo' : 'resend') . ' status=' . $statusCode . ' response=' . ($response ?: $status));
-    respond(false, 'Unable to send the verification email. Please try again later.', [], 502);
+    if ($statusCode === 401 || $statusCode === 403) {
+        respond(false, 'The email provider rejected the API key. Check BREVO_API_KEY in Railway.', [], 502);
+    }
+    if ($statusCode === 400 || $statusCode === 422) {
+        respond(false, 'The email provider rejected the sender. Verify MAIL_FROM_EMAIL in Brevo and use that exact address in Railway.', [], 502);
+    }
+    respond(false, 'The email provider is temporarily unavailable. Check Railway backend logs.', [], 502);
 }
 
 respond(true, $generic);
