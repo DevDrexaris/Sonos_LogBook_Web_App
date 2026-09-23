@@ -150,6 +150,8 @@ function PhilippinesClock() {
 
 function AuthPage({ onLogin }) {
   const [register, setRegister] = useState(false);
+  const [recovery, setRecovery] = useState(false);
+  const [recoveryStep, setRecoveryStep] = useState("email");
   const [form, setForm] = useState({
     full_name: "",
     username: "",
@@ -173,17 +175,30 @@ function AuthPage({ onLogin }) {
     setLoading(true);
     try {
       const data = await request(
-        register ? "/auth/register.php" : "/auth/login.php",
+        recovery
+          ? recoveryStep === "email" ? "/auth/forgot-password.php" : "/auth/reset-password.php"
+          : register ? "/auth/register.php" : "/auth/login.php",
         {
           method: "POST",
-          body: JSON.stringify(
-            register
-              ? form
-              : { identifier: form.email, password: form.password },
-          ),
+          body: JSON.stringify(recovery
+            ? recoveryStep === "email"
+              ? { email: form.email }
+              : { email: form.email, code: form.code, password: form.password }
+            : register ? form : { identifier: form.email, password: form.password }),
         },
       );
-      onLogin(data.data.user);
+      if (recovery) {
+        if (recoveryStep === "email") {
+          setRecoveryStep("code");
+          setError("Check your Gmail inbox for the six-digit code.");
+        } else {
+          setRecovery(false);
+          setRecoveryStep("email");
+          setError("Password reset. You can sign in now.");
+        }
+      } else {
+        onLogin(data.data.user);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -216,19 +231,21 @@ function AuthPage({ onLogin }) {
             <span className="brand-name">Sono</span>
           </div>
           <span className="eyebrow">
-            {register ? "CREATE YOUR ACCOUNT" : "WELCOME BACK"}
+            {recovery ? "RESET YOUR PASSWORD" : register ? "CREATE YOUR ACCOUNT" : "WELCOME BACK"}
           </span>
           <h2>
-            {register ? "Start your work record." : "Pick up where you left off."}
+            {recovery ? recoveryStep === "email" ? "Recover your account." : "Enter your verification code." : register ? "Start your work record." : "Pick up where you left off."}
           </h2>
           <p className="muted">
-            {register
+            {recovery
+              ? "We will send a six-digit code to your Gmail address."
+              : register
               ? "A focused space for your daily record."
               : "Sign in to access your activity and insights."}
           </p>
           {error && <div className="alert">{error}</div>}
           <form onSubmit={submit}>
-            {register && (
+            {!recovery && register && (
               <>
                 <label>
                   Full name
@@ -256,14 +273,20 @@ function AuthPage({ onLogin }) {
               Email or username
               <input
                 required
-                type={register ? "email" : "text"}
-                pattern={register ? ".+@gmail\\.com$" : undefined}
-                title={register ? "Use a Gmail address ending in @gmail.com." : undefined}
+                type={register || recovery ? "email" : "text"}
+                pattern={register || recovery ? ".+@gmail\\.com$" : undefined}
+                title={register || recovery ? "Use a Gmail address ending in @gmail.com." : undefined}
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
             </label>
-            <label>
+            {recovery && recoveryStep === "code" && (
+              <label>
+                Verification code
+                <input required inputMode="numeric" pattern="[0-9]{6}" maxLength="6" value={form.code || ""} onChange={(e) => setForm({ ...form, code: e.target.value.replace(/\D/g, "") })} />
+              </label>
+            )}
+            {!recovery || recoveryStep === "code" ? <label>
               Password
               <input
                 required
@@ -272,8 +295,8 @@ function AuthPage({ onLogin }) {
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
-            </label>
-            {register && (
+            </label> : null}
+            {!recovery && register && (
               <label>
                 Confirm password
                 <input
@@ -287,13 +310,13 @@ function AuthPage({ onLogin }) {
               </label>
             )}
             <button className="primary wide" disabled={loading}>
-              {loading ? "Working..." : register ? "Create account" : "Sign in"}{" "}
+              {loading ? "Working..." : recovery ? recoveryStep === "email" ? "Send code" : "Reset password" : register ? "Create account" : "Sign in"}{" "}
               <ArrowUpRight size={17} />
             </button>
           </form>
 
-          <div className="divider"><span>or continue with</span></div>
-          <button
+          {!recovery && <div className="divider"><span>or continue with</span></div>}
+          {!recovery && <button
             type="button"
             className="secondary wide google-button"
             onClick={() => {
@@ -307,9 +330,12 @@ function AuthPage({ onLogin }) {
               aria-hidden="true"
             />
             {register ? "Continue with Google" : "Sign in with Google"}
-          </button>
+          </button>}
 
-          <div className="auth-switch">
+          {!recovery && !register && <button type="button" className="text-action" onClick={() => { setRecovery(true); setError(""); }}>Forgot password?</button>}
+          {recovery && <button type="button" className="text-action" onClick={() => { setRecovery(false); setRecoveryStep("email"); setError(""); }}>Back to sign in</button>}
+
+          {!recovery && <div className="auth-switch">
             {register ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               onClick={() => {
@@ -319,7 +345,7 @@ function AuthPage({ onLogin }) {
             >
               {register ? "Sign in" : "Create account"}
             </button>
-          </div>
+          </div>}
         </div>
       </section>
     </main>

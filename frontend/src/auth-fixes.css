@@ -74,6 +74,17 @@
   margin-top: 14px;
 }
 
+.text-action {
+  display: block;
+  width: fit-content;
+  margin: 14px auto 0;
+  padding: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .logout-confirm {
   width: min(420px, 100%);
 }
