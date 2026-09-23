@@ -223,6 +223,10 @@ textarea {
   .log-panel,
   .insight {
     padding: 16px;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .log-panel .panel-head h3,
@@ -237,6 +241,8 @@ textarea {
 
   .log-panel .table-wrap {
     overflow: visible;
+    width: 100%;
+    padding: 0 2px;
   }
 
   .log-panel table,
@@ -259,9 +265,12 @@ textarea {
   .log-panel tbody {
     display: grid;
     gap: 10px;
+    width: 100%;
   }
 
   .log-panel tr {
+    width: 100%;
+    margin: 0;
     padding: 12px;
     border: 1px solid var(--line);
     border-radius: 7px;
@@ -278,6 +287,12 @@ textarea {
     padding: 7px 0;
     border: 0;
     text-align: left;
+  }
+
+  .log-panel td:first-child,
+  .log-panel td:nth-child(2),
+  .log-panel td:last-child {
+    width: 100% !important;
   }
 
   .log-panel td::before {
