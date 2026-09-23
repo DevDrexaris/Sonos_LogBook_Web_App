@@ -123,6 +123,30 @@ function useAuth() {
   };
 }
 
+function PhilippinesClock() {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="philippines-clock" title="Philippine Standard Time">
+      <Clock3 size={15} />
+      <span>
+        {now.toLocaleTimeString("en-PH", {
+          timeZone: PHILIPPINES_TIMEZONE,
+          hour: "numeric",
+          minute: "2-digit",
+          second: "2-digit",
+        })}
+      </span>
+      <small>PHT</small>
+    </div>
+  );
+}
+
 function AuthPage({ onLogin }) {
   const [register, setRegister] = useState(false);
   const [form, setForm] = useState({
@@ -373,6 +397,7 @@ function Shell({ user, onLogout, children }) {
             </strong>
           </div>
           <div className="top-actions">
+            <PhilippinesClock />
             <NotificationCenter user={user} />
             <Link to="/profile" className="avatar small" title="Open profile">
               <img src={imageUrl(user?.profile_image || defaultProfileImage)} alt="" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = imageUrl(defaultProfileImage); }} />

@@ -90,3 +90,25 @@
     margin-bottom: 34px;
   }
 }
+
+.philippines-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.philippines-clock small {
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+@media (max-width: 640px) {
+  .philippines-clock {
+    display: none;
+  }
+}
