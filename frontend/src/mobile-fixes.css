@@ -499,6 +499,12 @@ textarea {
   overflow-wrap: anywhere;
 }
 
+.mobile-activity-details .log-location {
+  color: #b4c0c8;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .mobile-activity-actions {
   display: flex;
   justify-content: flex-end;
@@ -515,7 +521,62 @@ textarea {
   color: #ffb0ac;
 }
 
+.log-panel .table-wrap {
+  display: block;
+}
+
+.log-panel .mobile-activity-list {
+  display: none;
+}
+
+label,
+label input,
+label select,
+label textarea,
+.auth-panel,
+.auth-box,
+.modal,
+.modal form,
+.profile-panel,
+.profile-panel form,
+.profile-panel input[type="file"] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.profile-panel form,
+.profile-panel input[type="file"] {
+  width: 100%;
+}
+
 @media (max-width: 640px) {
+  .content {
+    padding: 18px 12px 28px;
+  }
+
+  .auth-panel {
+    padding: 24px 16px;
+  }
+
+  .auth-box h2 {
+    font-size: 28px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .log-panel .table-wrap {
+    display: none;
+  }
+
+  .log-panel .mobile-activity-list {
+    display: grid;
+  }
+
   .top-actions .avatar.small {
     display: grid;
     width: 38px;
@@ -609,6 +670,11 @@ textarea {
     color: #e5edf2;
     font-size: 12px;
     overflow-wrap: anywhere;
+  }
+
+  .mobile-activity-details .log-location {
+    color: #b4c0c8;
+    font-size: 11px;
   }
 
   .mobile-activity-actions {

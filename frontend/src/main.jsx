@@ -755,7 +755,7 @@ function LogTable({ logs, onAdd, onEdit, onDelete, showOwner = false }) {
               <div><dt>Date</dt><dd>{log.log_date}</dd></div>
               <div><dt>Time</dt><dd>{formatTime(log.time_in)} - {formatTime(log.time_out)}</dd></div>
               {showOwner && <div><dt>User</dt><dd>{log.full_name || "Unknown"}</dd></div>}
-              <div><dt>Location</dt><dd>{log.location || "Not specified"}</dd></div>
+              <div><dt>Location</dt><dd className="log-location">{log.location || "N/A"}</dd></div>
               <div><dt>Category</dt><dd><span className="category">{log.category}</span></dd></div>
             </dl>
             <div className="mobile-activity-actions">
