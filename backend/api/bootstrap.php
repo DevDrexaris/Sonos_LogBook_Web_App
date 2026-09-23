@@ -44,6 +44,15 @@ function rate_limit($pdo, $key, $limit, $windowSeconds) {
 	$stmt->execute([$key]);
 	return (int)$stmt->fetchColumn() <= $limit;
 }
+function ensure_signup_security_tables($pdo) {
+	try {
+		$pdo->exec('CREATE TABLE IF NOT EXISTS signup_verifications (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, full_name VARCHAR(120) NOT NULL, username VARCHAR(50) NOT NULL, email VARCHAR(190) NOT NULL, password_hash VARCHAR(255) NOT NULL, code_hash CHAR(64) NOT NULL, expires_at DATETIME NOT NULL, attempts TINYINT UNSIGNED NOT NULL DEFAULT 0, ip_address VARCHAR(45) NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY uq_signup_email (email), INDEX idx_signup_expires (expires_at))');
+		$pdo->exec('CREATE TABLE IF NOT EXISTS api_rate_limits (rate_key VARCHAR(191) PRIMARY KEY, window_started DATETIME NOT NULL, attempts INT UNSIGNED NOT NULL DEFAULT 0, INDEX idx_rate_window (window_started))');
+	} catch (Throwable $error) {
+		error_log('Signup security tables unavailable: ' . $error->getMessage());
+		respond(false, 'Signup is temporarily unavailable. Please try again later.', [], 503);
+	}
+}
 function send_brevo_email($to, $subject, $text, $html) {
 	$key = env_value('BREVO_API_KEY');
 	$from = env_value('MAIL_FROM_EMAIL', env_value('MAIL_FROM'));

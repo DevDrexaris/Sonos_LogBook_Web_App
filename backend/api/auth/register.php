@@ -8,6 +8,7 @@ $email = strtolower(trim((string)($input['email'] ?? '')));
 $password = (string)($input['password'] ?? '');
 $code = trim((string)($input['verification_code'] ?? ''));
 $generic = 'If the details are eligible, a verification code has been sent to that Gmail address.';
+ensure_signup_security_tables($pdo);
 
 if (!$name || strlen($name) > 120 || !preg_match('/^[a-zA-Z0-9_]{3,50}$/', $username) || !filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/^[^@\s]+@gmail\.com$/i', $email) || strlen($password) < 8 || $password !== ($input['confirm_password'] ?? '')) {
 	respond(false, 'Use a valid Gmail address and complete all required fields.', [], 422);
