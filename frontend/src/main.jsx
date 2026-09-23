@@ -205,7 +205,7 @@ function AuthPage({ onLogin }) {
           </p>
         </div>
         <div className="art-footer">
-          Digital work record management <span>2026</span>
+          Digital work record management <span>DevXaris</span>
         </div>
       </section>
       <section className="auth-panel">
