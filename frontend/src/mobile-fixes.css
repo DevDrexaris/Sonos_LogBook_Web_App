@@ -655,9 +655,13 @@ label textarea,
     padding: 8px 0 4px;
   }
 
+  .log-panel .mobile-activity-details {
+    grid-template-columns: 1fr;
+  }
+
   .mobile-activity-details > div {
     display: grid;
-    grid-template-columns: minmax(72px, 30%) minmax(0, 1fr);
+    grid-template-columns: 78px minmax(0, 1fr);
     gap: 12px;
     padding: 8px 0;
     border-bottom: 1px solid #293640;
@@ -676,7 +680,12 @@ label textarea,
     margin: 0;
     color: #e5edf2;
     font-size: 12px;
+    line-height: 1.4;
     overflow-wrap: anywhere;
+  }
+
+  .mobile-activity-details dd:not(.log-location) {
+    white-space: nowrap;
   }
 
   .mobile-activity-details .log-location {
