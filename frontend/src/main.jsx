@@ -710,6 +710,30 @@ function LogTable({ logs, onAdd, onEdit, onDelete, showOwner = false }) {
           </tbody>
         </table>
       </div>
+      <div className="mobile-activity-list">
+        {logs.map((log) => (
+          <article className="mobile-activity-card" key={`mobile-${log.id}`}>
+            <div className="mobile-activity-card-head">
+              <div>
+                <strong>{log.title || "Untitled"}</strong>
+                <small>{log.activity}</small>
+              </div>
+              <span className={`status ${log.status.toLowerCase()}`}>{log.status}</span>
+            </div>
+            <dl className="mobile-activity-details">
+              <div><dt>Date</dt><dd>{log.log_date}</dd></div>
+              <div><dt>Time</dt><dd>{formatTime(log.time_in)} - {formatTime(log.time_out)}</dd></div>
+              {showOwner && <div><dt>User</dt><dd>{log.full_name || "Unknown"}</dd></div>}
+              <div><dt>Location</dt><dd>{log.location || "Not specified"}</dd></div>
+              <div><dt>Category</dt><dd><span className="category">{log.category}</span></dd></div>
+            </dl>
+            <div className="mobile-activity-actions">
+              <button className="secondary" onClick={() => onEdit(log)}><ArrowUpRight size={16} /> Edit</button>
+              <button className="secondary danger-action" onClick={() => onDelete(log)}><X size={16} /> Delete</button>
+            </div>
+          </article>
+        ))}
+      </div>
       {!logs.length && (
         <div className="empty">No entries yet. Start with your first log.</div>
       )}

@@ -345,3 +345,120 @@ textarea {
     transition-duration: .01ms !important;
   }
 }
+
+.mobile-activity-list {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .top-actions .avatar.small {
+    display: grid;
+    width: 38px;
+    height: 38px;
+  }
+
+  .log-panel .table-wrap {
+    display: none;
+  }
+
+  .log-panel .mobile-activity-list {
+    display: grid;
+    width: 100%;
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .mobile-activity-card {
+    width: 100%;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #34414b;
+    border-radius: 10px;
+    background: #18212a;
+    box-shadow: 0 8px 20px #0003;
+  }
+
+  .mobile-activity-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-activity-card-head > div {
+    min-width: 0;
+  }
+
+  .mobile-activity-card-head strong,
+  .mobile-activity-card-head small {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-activity-card-head strong {
+    color: #eff5f8;
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .mobile-activity-card-head small {
+    margin-top: 5px;
+    color: #93a2ad;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .mobile-activity-card-head .status {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .mobile-activity-details {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 8px 0 4px;
+  }
+
+  .mobile-activity-details > div {
+    display: grid;
+    grid-template-columns: minmax(72px, 30%) minmax(0, 1fr);
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #293640;
+  }
+
+  .mobile-activity-details dt {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .mobile-activity-details dd {
+    min-width: 0;
+    margin: 0;
+    color: #e5edf2;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-activity-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  .mobile-activity-actions button {
+    min-height: 44px;
+    padding: 9px 10px;
+  }
+
+  .mobile-activity-actions .danger-action {
+    color: #ffb0ac;
+  }
+}
