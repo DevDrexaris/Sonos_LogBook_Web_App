@@ -240,13 +240,13 @@ function AuthPage({ onLogin }) {
           <h2>
             {recovery ? recoveryStep === "email" ? "Recover your account." : "Enter your verification code." : register ? "Start your work record." : "Pick up where you left off."}
           </h2>
-          <p className="muted">
-            {recovery
-              ? "We will send a six-digit code to your Gmail address."
-              : register
-              ? "A focused space for your daily record."
-              : "Sign in to access your activity and insights."}
-          </p>
+          {!register && (
+            <p className="muted">
+              {recovery
+                ? "We will send a six-digit code to your Gmail address."
+                : "Sign in to access your activity and insights."}
+            </p>
+          )}
           {error && <div className="alert">{error}</div>}
           <form onSubmit={submit}>
             {!recovery && register && (
