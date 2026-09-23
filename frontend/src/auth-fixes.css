@@ -54,8 +54,11 @@
 }
 
 .google-mark {
-  color: #4285f4;
-  font: 700 18px 'Space Grotesk';
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  object-fit: contain;
 }
 
 .auth-box > .auth-switch,

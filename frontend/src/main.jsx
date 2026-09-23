@@ -300,7 +300,12 @@ function AuthPage({ onLogin }) {
               window.location.href = `${API}/auth/google.php`;
             }}
           >
-            <span className="google-mark">G</span>
+            <img
+              className="google-mark"
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt=""
+              aria-hidden="true"
+            />
             {register ? "Continue with Google" : "Sign in with Google"}
           </button>
 
