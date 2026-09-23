@@ -79,6 +79,10 @@ function getTheme(userId) {
 function applyTheme(theme) {
   document.documentElement.style.setProperty("--accent", theme.accent);
   document.documentElement.style.setProperty("--app-background", theme.background);
+  document.documentElement.style.setProperty(
+    "--nav-background",
+    `linear-gradient(rgba(5, 8, 11, .42), rgba(5, 8, 11, .42)), ${theme.background}`,
+  );
 }
 async function getCroppedImage(imageSrc, pixelCrop) {
   const image = await new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = imageSrc; });
@@ -1319,8 +1323,7 @@ function SettingsPage({ user }) {
     "linear-gradient(135deg, #1d1710 0%, #463523 100%)",
   ];
   useEffect(() => {
-    document.documentElement.style.setProperty("--accent", accent);
-    document.documentElement.style.setProperty("--app-background", background);
+    applyTheme({ accent, background });
     localStorage.setItem(themeKey(user.id), JSON.stringify({ accent, background }));
   }, [accent, background]);
   return (

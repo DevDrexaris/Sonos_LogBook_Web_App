@@ -2,6 +2,11 @@ html {
   overflow-x: hidden;
 }
 
+.sidebar,
+.topbar {
+  background: var(--nav-background, #10161c);
+}
+
 body {
   overflow-x: hidden;
 }
