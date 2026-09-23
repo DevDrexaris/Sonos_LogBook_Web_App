@@ -325,6 +325,7 @@ function AuthPage({ onLogin }) {
 
 function Shell({ user, onLogout, children }) {
   const [open, setOpen] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const location = useLocation();
   const admin = user?.role === "admin";
   const links = admin
@@ -376,7 +377,7 @@ function Shell({ user, onLogout, children }) {
             <strong>{user?.full_name || "Demo User"}</strong>
             <small>{admin ? "Administrator" : "Member"}</small>
           </div>
-          <button className="icon-button" onClick={onLogout} title="Log out">
+          <button className="icon-button" onClick={() => setConfirmLogout(true)} title="Log out">
             <LogOut size={17} />
           </button>
         </div>
@@ -405,6 +406,19 @@ function Shell({ user, onLogout, children }) {
           </div>
         </header>
         {children}
+        {confirmLogout && (
+          <div className="modal-backdrop">
+            <div className="modal logout-confirm" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+              <span className="eyebrow">SIGN OUT</span>
+              <h3 id="logout-title">Log out of Sono?</h3>
+              <p className="muted">Your saved records will stay safe. You can sign in again anytime.</p>
+              <div className="modal-actions">
+                <button className="secondary" onClick={() => setConfirmLogout(false)}>Cancel</button>
+                <button className="primary" onClick={onLogout}>Log out <LogOut size={16} /></button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

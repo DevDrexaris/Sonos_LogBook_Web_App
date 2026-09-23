@@ -54,7 +54,7 @@ if (empty($tokenData['access_token'])) {
 $userJson = @file_get_contents('https://openidconnect.googleapis.com/v1/userinfo?access_token=' . urlencode($tokenData['access_token']));
 $user = json_decode($userJson, true);
 
-if (empty($user['email'])) {
+if (empty($user['email']) || ($user['email_verified'] ?? false) !== true) {
     respond(false, 'Google login failed: no email returned.', [], 400);
 }
 
