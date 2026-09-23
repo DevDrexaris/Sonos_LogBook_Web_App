@@ -24,7 +24,7 @@ if (!empty($_FILES['profile_image']['tmp_name'])) {
     $target = $directory . DIRECTORY_SEPARATOR . $filename;
     $contents = file_get_contents($file['tmp_name']);
     if ($contents === false || file_put_contents($target, $contents, LOCK_EX) === false || !is_file($target)) respond(false, 'Unable to save profile image.', [], 500);
-    $imagePath = '/api/uploads/profiles/' . $filename;
+    $imagePath = '/uploads/profiles/' . $filename;
 }
 $stmt = $pdo->prepare('UPDATE users SET full_name=?, username=?, email=?, profile_image=? WHERE id=?');
 $stmt->execute([$fullName, $username, $email, $imagePath, $user['id']]);

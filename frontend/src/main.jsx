@@ -47,7 +47,8 @@ const imageUrl = (path) => {
   if (!path) return "";
   if (path.includes("SonoDefaultbald.jpg")) return defaultProfileImage;
   if (/^https?:\/\//i.test(path)) return path;
-  return `${API.replace('/api', '')}${path}`;
+  const publicPath = path.startsWith('/api/') ? path.slice(4) : path;
+  return `${API.replace('/api', '')}${publicPath}`;
 };
 const formatTime = (time) => { if (!time) return '--'; const [hours, minutes] = time.slice(0, 5).split(':'); const hour = Number(hours) % 12 || 12; return `${hour}:${minutes} ${Number(hours) >= 12 ? 'PM' : 'AM'}`; };
 function getTheme(userId) {
