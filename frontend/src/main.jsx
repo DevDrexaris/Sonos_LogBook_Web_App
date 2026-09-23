@@ -154,6 +154,7 @@ function PhilippinesClock() {
 
 function AuthPage({ onLogin }) {
   const [register, setRegister] = useState(false);
+  const [registrationStep, setRegistrationStep] = useState("details");
   const [recovery, setRecovery] = useState(false);
   const [recoveryStep, setRecoveryStep] = useState("email");
   const [form, setForm] = useState({
@@ -199,6 +200,13 @@ function AuthPage({ onLogin }) {
           setRecovery(false);
           setRecoveryStep("email");
           setError("Password reset. You can sign in now.");
+        }
+      } else if (register) {
+        if (registrationStep === "details") {
+          setRegistrationStep("code");
+          setError("Check your Gmail inbox for the six-digit verification code.");
+        } else {
+          onLogin(data.data.user);
         }
       } else {
         onLogin(data.data.user);
@@ -249,13 +257,14 @@ function AuthPage({ onLogin }) {
           )}
           {register && (
             <p className="muted">
-              Account creation is handled by Google. This confirms that your
-              Gmail account exists before Sono creates your profile.
+              {registrationStep === "details"
+                ? "We will send a one-time verification code to your Gmail address."
+                : "Enter the six-digit code sent to your Gmail address."}
             </p>
           )}
           {error && <div className="alert">{error}</div>}
-          {!register && <form onSubmit={submit}>
-            {!recovery && register && (
+          <form onSubmit={submit}>
+            {!recovery && register && registrationStep === "details" && (
               <>
                 <label>
                   Full name
@@ -279,7 +288,7 @@ function AuthPage({ onLogin }) {
                 </label>
               </>
             )}
-            <label>
+            {(recovery || !register || registrationStep === "details") && <label>
               Email or username
               <input
                 required
@@ -289,14 +298,20 @@ function AuthPage({ onLogin }) {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
-            </label>
+            </label>}
+            {register && registrationStep === "code" && (
+              <label>
+                Verification code
+                <input required inputMode="numeric" pattern="[0-9]{6}" maxLength="6" value={form.verification_code || ""} onChange={(e) => setForm({ ...form, verification_code: e.target.value.replace(/\D/g, "") })} />
+              </label>
+            )}
             {recovery && recoveryStep === "code" && (
               <label>
                 Verification code
                 <input required inputMode="numeric" pattern="[0-9]{6}" maxLength="6" value={form.code || ""} onChange={(e) => setForm({ ...form, code: e.target.value.replace(/\D/g, "") })} />
               </label>
             )}
-            {!recovery || recoveryStep === "code" ? <label>
+            {(!recovery || recoveryStep === "code") && (!register || registrationStep === "details") ? <label>
               Password
               <input
                 required
@@ -306,7 +321,7 @@ function AuthPage({ onLogin }) {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
             </label> : null}
-            {!recovery && register && (
+            {!recovery && register && registrationStep === "details" && (
               <label>
                 Confirm password
                 <input
@@ -320,10 +335,10 @@ function AuthPage({ onLogin }) {
               </label>
             )}
             <button className="primary wide" disabled={loading}>
-              {loading ? "Working..." : recovery ? recoveryStep === "email" ? "Send code" : "Reset password" : register ? "Create account" : "Sign in"}{" "}
+              {loading ? "Working..." : recovery ? recoveryStep === "email" ? "Send code" : "Reset password" : register ? registrationStep === "details" ? "Send verification code" : "Verify and create account" : "Sign in"}{" "}
               <ArrowUpRight size={17} />
             </button>
-          </form>}
+          </form>
 
           {!recovery && <div className="divider"><span>or continue with</span></div>}
           {!recovery && <button
@@ -350,6 +365,7 @@ function AuthPage({ onLogin }) {
             <button
               onClick={() => {
                 setRegister(!register);
+                setRegistrationStep("details");
                 setError("");
               }}
             >
