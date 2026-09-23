@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config.php';
+date_default_timezone_set('Asia/Manila');
 $origin = env_value('APP_ORIGIN', 'http://localhost:5173');
 header('Access-Control-Allow-Origin: ' . $origin); header('Access-Control-Allow-Credentials: true'); header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token'); header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS'); header('Content-Type: application/json; charset=utf-8');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
@@ -24,6 +25,7 @@ if ($dbHost === '') {
 }
 try {
 	$pdo = new PDO('mysql:host='.$dbHost.';port='.$dbPort.';dbname='.$dbName.';charset=utf8mb4', $dbUser, $dbPassword, [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);
+	$pdo->exec("SET time_zone = '+08:00'");
 } catch (Throwable $e) {
 	error_log('Database connection failed for host='.$dbHost.' port='.$dbPort.' database='.$dbName.' user='.$dbUser.': ' . $e->getMessage());
 	http_response_code(503);

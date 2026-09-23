@@ -36,6 +36,22 @@ import Cropper from "react-easy-crop";
 const API =
   import.meta.env.VITE_API_URL ||
   "https://sonoslogbookwebapp-production.up.railway.app/api";
+const PHILIPPINES_TIMEZONE = "Asia/Manila";
+const manilaDateKey = (date = new Date()) => {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: PHILIPPINES_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+};
+const manilaDateKeyOffset = (days) => {
+  const date = new Date(`${manilaDateKey()}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+};
 const emptyLogs = [];
 const defaultProfileImage = "https://cdn.phototourl.com/free/2026-09-22-5a80ed76-cc8f-4016-abd2-1326314af37b.jpg";
 const defaultTheme = {
@@ -370,7 +386,7 @@ function Shell({ user, onLogout, children }) {
 }
 
 function Stats({ logs, admin, adminStats }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = manilaDateKey();
   const total = admin ? adminStats.logs : logs.length;
   const todayTotal = admin
     ? adminStats.today
@@ -390,7 +406,7 @@ function Stats({ logs, admin, adminStats }) {
             ? adminStats.week
             : logs.filter(
                 (log) =>
-                  new Date(log.log_date) >= new Date(Date.now() - 6 * 86400000),
+                  log.log_date >= manilaDateKeyOffset(-6),
               ).length
         }
         note="Saved entries"
@@ -501,7 +517,7 @@ function NotificationCenter({ user }) {
             >
               <strong>{item.title}</strong>
               <span>{item.message}</span>
-              <small>{new Date(item.created_at).toLocaleString()}</small>
+              <small>{new Date(item.created_at).toLocaleString("en-PH", { timeZone: PHILIPPINES_TIMEZONE })}</small>
             </button>
           ))}
           {!notifications.length && (
@@ -704,7 +720,7 @@ function Dashboard({ user }) {
   };
   const updateLog = async (log) => { try { await request("/logs/update.php", { method: "PUT", body: JSON.stringify(log) }); setLogs(logs.map((item) => item.id === log.id ? log : item)); setEditingLog(null); } catch (err) { setError(err.message); } };
   const deleteLog = async (log) => { if (!window.confirm(`Delete "${log.title || log.activity}"? This cannot be undone.`)) return; try { await request("/logs/delete.php", { method: "DELETE", body: JSON.stringify({ id: log.id }) }); setLogs(logs.filter((item) => item.id !== log.id)); } catch (err) { setError(err.message); } };
-  const dayCounts = Array.from({ length: 7 }, (_, index) => { const date = new Date(); date.setHours(0, 0, 0, 0); date.setDate(date.getDate() - (6 - index)); const key = date.toISOString().slice(0, 10); return { label: date.toLocaleDateString(undefined, { weekday: "short" }).slice(0, 1), count: logs.filter((log) => log.log_date === key).length }; });
+  const dayCounts = Array.from({ length: 7 }, (_, index) => { const key = manilaDateKeyOffset(index - 6); const label = new Date(`${key}T00:00:00Z`).toLocaleDateString("en-PH", { timeZone: PHILIPPINES_TIMEZONE, weekday: "short" }).slice(0, 1); return { label, count: logs.filter((log) => log.log_date === key).length }; });
   return (
     <Shell
       user={user}
@@ -714,7 +730,7 @@ function Dashboard({ user }) {
         <div className="page-heading">
           <div>
             <span className="eyebrow">
-              {new Date().toLocaleDateString(undefined, {
+              {new Date().toLocaleDateString("en-PH", { timeZone: PHILIPPINES_TIMEZONE,
                 weekday: "long",
                 month: "long",
                 day: "numeric",
@@ -792,7 +808,7 @@ function Dashboard({ user }) {
 function AddLog({ entry, onClose, onSave }) {
   const [locationEnabled, setLocationEnabled] = useState(Boolean(entry?.location));
   const [form, setForm] = useState({
-    log_date: new Date().toISOString().slice(0, 10),
+    log_date: manilaDateKey(),
     time_in: "09:00",
     time_out: "",
     title: entry?.title || "",
