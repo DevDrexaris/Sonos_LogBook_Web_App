@@ -1,20 +1,21 @@
 # Password reset email setup
 
-The password reset endpoints use Resend over HTTPS. Configure these variables on the Railway PHP backend service:
+The password reset endpoints support Brevo or Resend over HTTPS. If you do not own a domain, use Brevo and verify one Gmail sender address.
 
 ```env
-RESEND_API_KEY=re_your_resend_api_key
-MAIL_FROM=Sono <no-reply@your-verified-domain.com>
+BREVO_API_KEY=xkeysib-your_key
+MAIL_FROM_EMAIL=yourverifiedgmail@gmail.com
+MAIL_FROM_NAME=Sono
 ```
 
 ## Production setup
 
-1. Create a Resend account and an API key.
-2. Add and verify a domain you control in Resend.
-3. Publish the SPF and DKIM DNS records Resend provides.
-4. Set `MAIL_FROM` to an address on that verified domain.
-5. Add both variables to Railway and deploy the staged changes.
+1. Create a Brevo account and an API key.
+2. Add your Gmail address under **Senders & IP → Senders**.
+3. Complete the verification email Brevo sends to that Gmail address.
+4. Add `BREVO_API_KEY`, `MAIL_FROM_EMAIL`, and `MAIL_FROM_NAME` to Railway.
+5. Deploy the staged changes.
 
 The reset code is six digits, stored only as a SHA-256 hash, expires after 15 minutes, and is deleted after successful use. Only Gmail addresses are accepted.
 
-Inbox placement cannot be guaranteed by application code. A verified sender domain, SPF, DKIM, and a good sender reputation are required for reliable inbox delivery. Do not use `onboarding@resend.dev` for production users; it is intended for testing and has recipient restrictions.
+Inbox placement cannot be guaranteed by application code. A verified sender and good sender reputation improve delivery. Brevo may still place messages in spam depending on the recipient provider.

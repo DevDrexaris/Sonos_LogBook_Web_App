@@ -14,11 +14,13 @@ $stmt->execute([$email, 'active']);
 $user = $stmt->fetch();
 if (!$user) respond(true, $generic);
 
-$apiKey = env_value('RESEND_API_KEY');
-$from = env_value('MAIL_FROM');
-if ($apiKey === '' || $from === '') {
-    error_log('Password reset unavailable: RESEND_API_KEY and MAIL_FROM must be configured.');
-    respond(false, 'Password reset email is not configured. Add RESEND_API_KEY and MAIL_FROM to the Railway backend service.', [], 503);
+$resendKey = env_value('RESEND_API_KEY');
+$brevoKey = env_value('BREVO_API_KEY');
+$from = env_value('MAIL_FROM_EMAIL');
+$fromName = env_value('MAIL_FROM_NAME', 'Sono');
+if (($resendKey === '' && $brevoKey === '') || $from === '') {
+    error_log('Password reset unavailable: configure BREVO_API_KEY or RESEND_API_KEY plus MAIL_FROM_EMAIL.');
+    respond(false, 'Password reset email is not configured. Add a mail provider key and verified sender to Railway.', [], 503);
 }
 
 $code = (string)random_int(100000, 999999);
@@ -27,21 +29,26 @@ $expires = date('Y-m-d H:i:s', time() + 900);
 $pdo->prepare('DELETE FROM password_resets WHERE user_id=? OR expires_at < NOW()')->execute([$user['id']]);
 $pdo->prepare('INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (?, ?, ?)')->execute([$user['id'], $hash, $expires]);
 
-$payload = json_encode([
-    'from' => $from,
-    'to' => [$email],
-    'subject' => 'Your Sono password reset code',
-    'text' => "Hi {$user['full_name']},\n\nYour Sono password reset code is {$code}. It expires in 15 minutes.\n\nIf you did not request this, you can ignore this email.",
-    'html' => '<p>Hi '.htmlspecialchars($user['full_name'], ENT_QUOTES, 'UTF-8').',</p><p>Your Sono password reset code is:</p><p style="font-size:32px;font-weight:700;letter-spacing:8px">'.$code.'</p><p>This code expires in 15 minutes. If you did not request this, you can ignore this email.</p>',
-], JSON_UNESCAPED_SLASHES);
+$subject = 'Your Sono password reset code';
+$text = "Hi {$user['full_name']},\n\nYour Sono password reset code is {$code}. It expires in 15 minutes.\n\nIf you did not request this, you can ignore this email.";
+$html = '<p>Hi '.htmlspecialchars($user['full_name'], ENT_QUOTES, 'UTF-8').',</p><p>Your Sono password reset code is:</p><p style="font-size:32px;font-weight:700;letter-spacing:8px">'.$code.'</p><p>This code expires in 15 minutes. If you did not request this, you can ignore this email.</p>';
+if ($brevoKey !== '') {
+    $payload = json_encode(['sender' => ['name' => $fromName, 'email' => $from], 'to' => [['email' => $email]], 'subject' => $subject, 'textContent' => $text, 'htmlContent' => $html], JSON_UNESCAPED_SLASHES);
+    $url = 'https://api.brevo.com/v3/smtp/email';
+    $authHeader = "api-key: {$brevoKey}";
+} else {
+    $payload = json_encode(['from' => $fromName.' <'.$from.'>', 'to' => [$email], 'subject' => $subject, 'text' => $text, 'html' => $html], JSON_UNESCAPED_SLASHES);
+    $url = 'https://api.resend.com/emails';
+    $authHeader = "Authorization: Bearer {$resendKey}";
+}
 
 $context = stream_context_create(['http' => [
     'method' => 'POST',
-    'header' => "Authorization: Bearer {$apiKey}\r\nContent-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
+    'header' => $authHeader."\r\nContent-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
     'content' => $payload,
     'ignore_errors' => true,
 ]]);
-$response = @file_get_contents('https://api.resend.com/emails', false, $context);
+$response = @file_get_contents($url, false, $context);
 $status = $http_response_header[0] ?? '';
 if ($response === false || !str_contains($status, ' 2')) {
     $pdo->prepare('DELETE FROM password_resets WHERE user_id=?')->execute([$user['id']]);
