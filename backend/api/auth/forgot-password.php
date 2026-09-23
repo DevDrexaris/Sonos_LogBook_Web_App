@@ -16,7 +16,8 @@ if (!$user) respond(true, $generic);
 
 $resendKey = env_value('RESEND_API_KEY');
 $brevoKey = env_value('BREVO_API_KEY');
-$from = env_value('MAIL_FROM_EMAIL');
+$from = env_value('MAIL_FROM_EMAIL', env_value('MAIL_FROM'));
+$from = trim(preg_replace('/.*<([^>]+)>.*/', '$1', $from));
 $fromName = env_value('MAIL_FROM_NAME', 'Sono');
 if (($resendKey === '' && $brevoKey === '') || $from === '') {
     error_log('Password reset unavailable: configure BREVO_API_KEY or RESEND_API_KEY plus MAIL_FROM_EMAIL.');
@@ -50,9 +51,11 @@ $context = stream_context_create(['http' => [
 ]]);
 $response = @file_get_contents($url, false, $context);
 $status = $http_response_header[0] ?? '';
-if ($response === false || !str_contains($status, ' 2')) {
+preg_match('/\s(\d{3})\s/', $status, $statusMatch);
+$statusCode = (int)($statusMatch[1] ?? 0);
+if ($response === false || $statusCode < 200 || $statusCode >= 300) {
     $pdo->prepare('DELETE FROM password_resets WHERE user_id=?')->execute([$user['id']]);
-    error_log('Password reset email failed: ' . ($response ?: $status));
+    error_log('Password reset email failed provider=' . ($brevoKey !== '' ? 'brevo' : 'resend') . ' status=' . $statusCode . ' response=' . ($response ?: $status));
     respond(false, 'Unable to send the verification email. Please try again later.', [], 502);
 }
 
