@@ -783,6 +783,8 @@ function Dashboard({ user }) {
   const updateLog = async (log) => { try { await request("/logs/update.php", { method: "PUT", body: JSON.stringify(log) }); setLogs(logs.map((item) => item.id === log.id ? log : item)); setEditingLog(null); } catch (err) { setError(err.message); } };
   const deleteLog = async (log) => { if (!window.confirm(`Delete "${log.title || log.activity}"? This cannot be undone.`)) return; try { await request("/logs/delete.php", { method: "DELETE", body: JSON.stringify({ id: log.id }) }); setLogs(logs.filter((item) => item.id !== log.id)); } catch (err) { setError(err.message); } };
   const dayCounts = Array.from({ length: 7 }, (_, index) => { const key = manilaDateKeyOffset(index - 6); const label = new Date(`${key}T00:00:00Z`).toLocaleDateString("en-PH", { timeZone: PHILIPPINES_TIMEZONE, weekday: "short" }).slice(0, 1); return { label, count: logs.filter((log) => log.log_date === key).length }; });
+    const activeDays = dayCounts.filter((day) => day.count > 0).length;
+    const peakDay = dayCounts.reduce((peak, day) => day.count > peak.count ? day : peak, { label: "-", count: 0 });
   return (
     <Shell
       user={user}
@@ -845,6 +847,10 @@ function Dashboard({ user }) {
                 Your activity rhythm will appear after you save a log.
               </div>
             )}
+            <div className="rhythm-summary">
+              <div><strong>{activeDays}</strong><span>active days</span></div>
+              <div><strong>{peakDay.count || 0}</strong><span>peak on {peakDay.label}</span></div>
+            </div>
             <div className="insight-footer">
               <CheckCircle2 size={17} />{" "}
               <span>
@@ -957,8 +963,9 @@ function AddLog({ entry, onClose, onSave }) {
           </label>
           <label>
             Activity / description
-            <input
+            <textarea
               required
+              rows="5"
               placeholder="What did you work on?"
               value={form.activity}
               onChange={(e) => setForm({ ...form, activity: e.target.value })}
