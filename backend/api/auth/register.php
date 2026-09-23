@@ -46,7 +46,7 @@ if (!rate_limit($pdo, 'signup_ip:' . hash('sha256', $ip), 5, 3600) || !rate_limi
 }
 $check = $pdo->prepare('SELECT id FROM users WHERE email=? OR username=? LIMIT 1');
 $check->execute([$email, $username]);
-if ($check->fetch()) respond(true, $generic, ['verification_required' => true]);
+if ($check->fetch()) respond(false, 'That Gmail address or username is already registered. Sign in instead.', [], 409);
 
 $code = (string)random_int(100000, 999999);
 $hash = hash('sha256', $code);
