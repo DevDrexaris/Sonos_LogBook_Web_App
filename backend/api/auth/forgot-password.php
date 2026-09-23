@@ -15,10 +15,10 @@ $user = $stmt->fetch();
 if (!$user) respond(true, $generic);
 
 $apiKey = env_value('RESEND_API_KEY');
-$from = env_value('MAIL_FROM', 'Sono <onboarding@resend.dev>');
-if ($apiKey === '') {
-    error_log('Password reset unavailable: RESEND_API_KEY is not configured.');
-    respond(false, 'Password reset email is not configured yet.', [], 503);
+$from = env_value('MAIL_FROM');
+if ($apiKey === '' || $from === '') {
+    error_log('Password reset unavailable: RESEND_API_KEY and MAIL_FROM must be configured.');
+    respond(false, 'Password reset email is not configured. Add RESEND_API_KEY and MAIL_FROM to the Railway backend service.', [], 503);
 }
 
 $code = (string)random_int(100000, 999999);
