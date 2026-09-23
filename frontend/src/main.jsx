@@ -314,9 +314,6 @@ function AuthPage({ onLogin }) {
               {register ? "Sign in" : "Create account"}
             </button>
           </div>
-          <p className="demo-note">
-            Demo mode is available when the PHP API is not configured.
-          </p>
         </div>
       </section>
     </main>
