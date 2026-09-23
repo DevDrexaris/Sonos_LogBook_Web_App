@@ -247,8 +247,14 @@ function AuthPage({ onLogin }) {
                 : "Sign in to access your activity and insights."}
             </p>
           )}
+          {register && (
+            <p className="muted">
+              Account creation is handled by Google. This confirms that your
+              Gmail account exists before Sono creates your profile.
+            </p>
+          )}
           {error && <div className="alert">{error}</div>}
-          <form onSubmit={submit}>
+          {!register && <form onSubmit={submit}>
             {!recovery && register && (
               <>
                 <label>
@@ -317,7 +323,7 @@ function AuthPage({ onLogin }) {
               {loading ? "Working..." : recovery ? recoveryStep === "email" ? "Send code" : "Reset password" : register ? "Create account" : "Sign in"}{" "}
               <ArrowUpRight size={17} />
             </button>
-          </form>
+          </form>}
 
           {!recovery && <div className="divider"><span>or continue with</span></div>}
           {!recovery && <button
