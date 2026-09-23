@@ -58,6 +58,18 @@ textarea {
   overflow-y: auto;
 }
 
+.logout-confirm-backdrop {
+  z-index: 1000;
+  align-items: center;
+  justify-items: center;
+  pointer-events: auto;
+}
+
+.logout-confirm-backdrop .logout-confirm {
+  position: relative;
+  z-index: 1001;
+}
+
 @media (max-width: 900px) {
   .sidebar {
     position: fixed;

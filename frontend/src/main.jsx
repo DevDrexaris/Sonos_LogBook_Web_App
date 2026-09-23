@@ -406,7 +406,7 @@ function Shell({ user, onLogout, children }) {
         </header>
         {children}
         {confirmLogout && (
-          <div className="modal-backdrop">
+          <div className="modal-backdrop logout-confirm-backdrop">
             <div className="modal logout-confirm" role="dialog" aria-modal="true" aria-labelledby="logout-title">
               <span className="eyebrow">SIGN OUT</span>
               <h3 id="logout-title">Log out of Sono?</h3>
