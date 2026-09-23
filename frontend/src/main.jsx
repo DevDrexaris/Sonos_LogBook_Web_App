@@ -682,24 +682,24 @@ function LogTable({ logs, onAdd, onEdit, onDelete, showOwner = false }) {
           <tbody>
             {logs.map((log) => (
               <tr key={log.id}>
-                <td>
+                <td data-label="Date">
                   <strong>{log.log_date}</strong>
                   <small>
                     {formatTime(log.time_in)} - {formatTime(log.time_out)}
                   </small>
                 </td>
-                <td><strong>{log.title || "Untitled"}</strong><small>{log.activity}</small></td>
-                {showOwner && <td className="log-owner"><strong>{log.full_name}</strong><small>@{log.username}</small></td>}
-                <td>{log.location || "—"}</td>
-                <td>
+                <td data-label="Activity"><strong>{log.title || "Untitled"}</strong><small>{log.activity}</small></td>
+                {showOwner && <td className="log-owner" data-label="User"><strong>{log.full_name}</strong><small>@{log.username}</small></td>}
+                <td data-label="Location">{log.location || "—"}</td>
+                <td data-label="Category">
                   <span className="category">{log.category}</span>
                 </td>
-                <td>
+                <td data-label="Status">
                   <span className={`status ${log.status.toLowerCase()}`}>
                     {log.status}
                   </span>
                 </td>
-                <td>
+                <td className="log-actions" data-label="Actions">
                   <button className="icon-button" onClick={() => onEdit(log)} title="Edit entry">
                     <ArrowUpRight size={16} />
                   </button>
