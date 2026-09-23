@@ -39,6 +39,21 @@ textarea {
   gap: 18px;
 }
 
+.content-grid {
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  align-items: start;
+}
+
+.content-grid > .panel {
+  min-width: 0;
+}
+
+.content-grid > .insight {
+  display: block;
+  visibility: visible;
+  min-width: 0;
+}
+
 .top-actions {
   min-width: 0;
   flex-shrink: 0;
