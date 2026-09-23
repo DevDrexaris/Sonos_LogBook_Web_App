@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import "./style.css";
 import "./auth-fixes.css";
+import "./mobile-fixes.css";
 import SonoLogo from "./assets/SonoLogoF.png";
 import Cropper from "react-easy-crop";
 
@@ -340,6 +341,7 @@ function Shell({ user, onLogout, children }) {
       ];
   return (
     <div className="app-shell">
+      {open && <button className="sidebar-scrim" aria-label="Close navigation" onClick={() => setOpen(false)} />}
       <aside className={open ? "sidebar open" : "sidebar"}>
         <div className="sidebar-brand brand">
           <img className="brand-logo" src={SonoLogo} alt="" />
